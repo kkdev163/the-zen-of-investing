@@ -4,28 +4,25 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="用清晰的现金流模型，推演房贷、投资与退休计划。">
-  <title>余量 · 家庭资产沙盘</title>
-  <link rel="stylesheet" href="./styles.css">
+  <title>复利 · 家庭资产沙盘</title>
+  <link rel="stylesheet" href="./styles.css?v=20260906-9">
 </head>
 <body data-plan="basic">
   <header class="topbar">
-    <a class="brand" href="#" aria-label="余量首页">
-      <span class="brand-mark" aria-hidden="true">余</span>
-      <span><strong>余量</strong><small>家庭资产沙盘</small></span>
+    <a class="brand" href="#" aria-label="复利首页">
+      <span class="brand-mark" aria-hidden="true">复</span>
+      <span><strong>复利</strong><small>家庭资产沙盘</small></span>
     </a>
     <nav class="plan-switch" aria-label="产品版本">
       <button type="button" data-plan-button="basic" aria-pressed="true">基础版</button>
-      <button type="button" data-plan-button="pro" aria-pressed="false">付费版 <i>PRO</i></button>
+      <button type="button" data-plan-button="pro" aria-pressed="false">增强版</button>
     </nav>
   </header>
 
   <main class="workspace">
     <aside class="settings" aria-label="推演参数">
       <div class="settings-head">
-        <div>
-          <p class="section-kicker">SCENARIO</p>
-          <h1>推演参数</h1>
-        </div>
+        <h1>推演参数</h1>
         <button class="settings-toggle" id="settings-toggle" type="button" aria-expanded="true" aria-controls="settings-body">
           <span>收起</span><i aria-hidden="true"></i>
         </button>
@@ -33,19 +30,37 @@
 
       <form id="settings-body">
         <fieldset>
-          <legend><span>01</span> 房贷</legend>
+          <legend><span>01</span> 纳指</legend>
+          <label class="field">
+            <span>初始仓位</span>
+            <span class="input-shell"><b>¥</b><input id="stock-principal" name="stockPrincipal" type="number" min="0" max="100000000" step="10000" value="1000000" inputmode="decimal"></span>
+          </label>
+          <div class="field-grid">
+            <label class="field">
+              <span>每月定投</span>
+            <span class="input-shell"><b>¥</b><input id="monthly-investment" name="monthlyInvestment" type="number" min="0" max="1000000" step="1000" value="2000" inputmode="decimal"></span>
+            </label>
+            <label class="field">
+              <span>预期年化</span>
+              <span class="input-shell suffix"><input id="stock-return" name="stockAnnualReturn" type="number" min="-50" max="50" step="0.1" value="10" inputmode="decimal"><b>%</b></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span>02</span> 房贷</legend>
           <label class="field">
             <span>剩余本金</span>
-            <span class="input-shell"><b>¥</b><input id="loan-principal" name="loanPrincipal" type="number" min="0" max="100000000" step="10000" value="2700000" inputmode="decimal"></span>
+            <span class="input-shell"><b>¥</b><input id="loan-principal" name="loanPrincipal" type="number" min="0" max="100000000" step="10000" value="2000000" inputmode="decimal"></span>
           </label>
           <div class="field-grid">
             <label class="field">
               <span>年利率</span>
-              <span class="input-shell suffix"><input id="loan-rate" name="loanAnnualRate" type="number" min="0" max="30" step="0.01" value="2.8" inputmode="decimal"><b>%</b></span>
+              <span class="input-shell suffix"><input id="loan-rate" name="loanAnnualRate" type="number" min="0" max="30" step="0.01" value="3" inputmode="decimal"><b>%</b></span>
             </label>
             <label class="field">
               <span>剩余年限</span>
-              <span class="input-shell suffix"><input id="remaining-years" name="remainingYears" type="number" min="0.1" max="50" step="0.1" value="28" inputmode="decimal"><b>年</b></span>
+              <span class="input-shell suffix"><input id="remaining-years" name="remainingYears" type="number" min="0.1" max="40" step="0.1" value="30" inputmode="decimal"><b>年</b></span>
             </label>
           </div>
           <div class="field">
@@ -57,34 +72,16 @@
           </div>
         </fieldset>
 
-        <fieldset>
-          <legend><span>02</span> 纳斯达克 100</legend>
-          <label class="field">
-            <span>初始仓位</span>
-            <span class="input-shell"><b>¥</b><input id="stock-principal" name="stockPrincipal" type="number" min="0" max="100000000" step="10000" value="1000000" inputmode="decimal"></span>
-          </label>
-          <div class="field-grid">
-            <label class="field">
-              <span>每月定投</span>
-              <span class="input-shell"><b>¥</b><input id="monthly-investment" name="monthlyInvestment" type="number" min="0" max="1000000" step="1000" value="20000" inputmode="decimal"></span>
-            </label>
-            <label class="field">
-              <span>预期年化</span>
-              <span class="input-shell suffix"><input id="stock-return" name="stockAnnualReturn" type="number" min="-50" max="50" step="0.1" value="10" inputmode="decimal"><b>%</b></span>
-            </label>
-          </div>
-        </fieldset>
-
         <fieldset class="pro-only">
-          <legend><span>03</span> 家庭现金流 <em>PRO</em></legend>
+          <legend><span>03</span> 家庭现金流 <em>增强</em></legend>
           <label class="field">
             <span>初始存款</span>
-            <span class="input-shell"><b>¥</b><input id="initial-cash" name="initialCash" type="number" min="0" max="100000000" step="10000" value="1000000" inputmode="decimal"></span>
+            <span class="input-shell"><b>¥</b><input id="initial-cash" name="initialCash" type="number" min="-100000000" max="100000000" step="10000" value="1000000" inputmode="decimal"></span>
           </label>
           <div class="field-grid">
             <label class="field">
               <span>每月收入</span>
-              <span class="input-shell"><b>¥</b><input id="monthly-income" name="monthlyIncome" type="number" min="0" max="10000000" step="1000" value="60000" inputmode="decimal"></span>
+              <span class="input-shell"><b>¥</b><input id="monthly-income" name="monthlyIncome" type="number" min="0" max="10000000" step="1000" value="20000" inputmode="decimal"></span>
             </label>
             <label class="field">
               <span>家庭开销</span>
@@ -94,11 +91,18 @@
         </fieldset>
 
         <fieldset class="pro-only retirement-fields">
-          <legend><span>04</span> 退休计划 <em>PRO</em></legend>
-          <label class="field">
+          <legend><span>04</span> 退休计划 <em>增强</em></legend>
+          <div class="field">
             <span>计划退休时间</span>
-            <span class="input-shell"><input id="retirement-date" name="retirementDate" type="month" min="2026-09" max="2056-09" value="2046-09"></span>
-          </label>
+            <div class="field-grid retirement-date-fields">
+              <label class="input-shell suffix">
+                <input id="retirement-year" name="retirementYear" type="number" min="2026" max="2066" step="1" value="2046" inputmode="numeric" aria-label="退休年份"><b>年</b>
+              </label>
+              <label class="input-shell suffix">
+                <input id="retirement-month" name="retirementMonthOfYear" type="number" min="1" max="12" step="1" value="9" inputmode="numeric" aria-label="退休月份"><b>月</b>
+              </label>
+            </div>
+          </div>
           <div class="field">
             <span>退休后月收入</span>
             <div class="choice-group">
@@ -115,48 +119,47 @@
     </aside>
 
     <section class="results" aria-live="polite">
-      <div class="results-head">
-        <div>
-          <p class="section-kicker">30 YEAR OUTLOOK · 2026.09—2056.09</p>
-          <h2 id="result-title">贷款与投资</h2>
-          <p id="result-subtitle">基础版计入每月定投，不计算家庭现金余额。</p>
-        </div>
-        <span class="live-badge"><i></i> 参数实时计算</span>
-      </div>
-
       <div class="metrics">
         <article>
-          <span>当前贷款</span>
-          <strong id="metric-loan">¥270.0万</strong>
-          <small id="metric-loan-detail">预计 2054.09 结清</small>
+          <span id="metric-payment-label">每月还款</span>
+          <strong id="metric-payment">¥8,432</strong>
+          <small id="metric-payment-detail">等额本息 · 首月本金 ¥3,432 · 利息 ¥5,000</small>
         </article>
         <article>
-          <span id="metric-payment-label">每月还款</span>
-          <strong id="metric-payment">¥11,602</strong>
-          <small id="metric-payment-detail">等额本息 · 首月利息 ¥6,300</small>
+          <span>总利息</span>
+          <strong id="metric-interest">¥103.6万</strong>
+          <small id="metric-interest-detail">按当前利率及还款方式估算</small>
         </article>
         <article>
           <span id="metric-event-label">资产超过贷款</span>
-          <strong id="metric-event">2031.08</strong>
-          <small id="metric-event-detail">约 4 年 11 个月后</small>
+          <strong id="metric-event">2031.10</strong>
+          <small id="metric-event-detail">约 5 年 1 个月后</small>
         </article>
         <article class="primary-metric">
-          <span>30 年后纳指资产</span>
-          <strong id="metric-stock">¥5,870.6万</strong>
-          <small id="metric-stock-detail">累计投入 ¥820.0万</small>
+          <span id="metric-stock-label">30 年后纳指资产</span>
+          <strong id="metric-stock">¥2,157.5万</strong>
+          <small id="metric-stock-detail">累计投入 ¥172.0万</small>
         </article>
       </div>
 
       <section class="chart-card" aria-label="资产趋势图">
         <div class="chart-toolbar">
           <div class="legend" id="legend"></div>
-          <div class="scale-switch" aria-label="纵轴刻度">
-            <button type="button" data-scale-button="linear" aria-pressed="true">线性</button>
-            <button type="button" data-scale-button="log" aria-pressed="false">对称对数</button>
+          <div class="chart-controls">
+            <output class="playback-date" id="playback-date" hidden></output>
+            <button class="chart-action" id="overview-toggle" type="button" aria-pressed="false">概览</button>
+            <button class="chart-action playback-button" id="playback-toggle" type="button" aria-pressed="false" data-state="idle">
+              <i aria-hidden="true"></i><span>播放</span>
+            </button>
+            <div class="scale-switch" aria-label="纵轴刻度">
+              <button type="button" data-scale-button="linear" aria-pressed="true">线性</button>
+              <button type="button" data-scale-button="log" aria-pressed="false">对称对数</button>
+            </div>
           </div>
         </div>
         <div class="chart-wrap">
-          <canvas id="trajectory-chart" role="img" aria-label="未来 30 年的贷款和纳斯达克资产曲线"></canvas>
+          <canvas id="trajectory-chart" role="img" aria-label="未来 30 年的贷款、累计利息和纳指资产曲线"></canvas>
+          <div class="overview-tooltips" id="overview-tooltips" hidden></div>
           <div class="chart-tooltip" id="chart-tooltip" hidden></div>
         </div>
       </section>
@@ -173,6 +176,6 @@
     </section>
   </main>
 
-  <script type="module" src="./js/app.js"></script>
+  <script type="module" src="./js/app.js?v=20260906-14"></script>
 </body>
 </html>

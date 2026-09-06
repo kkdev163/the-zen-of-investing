@@ -1,6 +1,7 @@
 export const START_YEAR = 2026;
 export const START_MONTH = 8;
 export const PROJECTION_MONTHS = 30 * 12;
+export const MAX_PROJECTION_MONTHS = 40 * 12;
 
 const MONTHS_PER_YEAR = 12;
 
@@ -44,11 +45,11 @@ export function projectScenario(rawInputs) {
     loanPrincipal: nonNegative(rawInputs.loanPrincipal),
     loanAnnualRate: finiteNumber(rawInputs.loanAnnualRate),
     repaymentMethod: rawInputs.repaymentMethod === 'equal-principal' ? 'equal-principal' : 'equal-payment',
-    remainingYears: Math.max(0.1, nonNegative(rawInputs.remainingYears)),
+    remainingYears: Math.min(40, Math.max(0.1, nonNegative(rawInputs.remainingYears))),
     stockPrincipal: nonNegative(rawInputs.stockPrincipal),
     monthlyInvestment: nonNegative(rawInputs.monthlyInvestment),
     stockAnnualReturn: Math.max(-99.9, finiteNumber(rawInputs.stockAnnualReturn)),
-    initialCash: nonNegative(rawInputs.initialCash),
+    initialCash: finiteNumber(rawInputs.initialCash),
     monthlyIncome: nonNegative(rawInputs.monthlyIncome),
     monthlyExpenses: nonNegative(rawInputs.monthlyExpenses),
     retirementMonth: Math.max(0, Math.round(nonNegative(rawInputs.retirementMonth))),
@@ -56,6 +57,7 @@ export function projectScenario(rawInputs) {
   };
 
   const loanMonths = Math.max(1, Math.round(inputs.remainingYears * MONTHS_PER_YEAR));
+  const projectionMonths = Math.max(PROJECTION_MONTHS, loanMonths);
   const loanMonthlyRate = inputs.loanAnnualRate / 100 / MONTHS_PER_YEAR;
   const stockMonthlyRate = (1 + inputs.stockAnnualReturn / 100) ** (1 / MONTHS_PER_YEAR) - 1;
   const equalPayment = calculateEqualPayment(inputs.loanPrincipal, inputs.loanAnnualRate, loanMonths);
@@ -64,7 +66,7 @@ export function projectScenario(rawInputs) {
   let loan = inputs.loanPrincipal;
   let stock = inputs.stockPrincipal;
   let cash = inputs.initialCash;
-  let totalInterest = 0;
+  let cumulativeInterest = 0;
   let firstPayment = 0;
   let firstInterest = 0;
   let payoffMonth = null;
@@ -72,9 +74,9 @@ export function projectScenario(rawInputs) {
   let retirementPayment = null;
   const points = [];
 
-  for (let month = 0; month <= PROJECTION_MONTHS; month += 1) {
-    points.push({ month, loan, stock, cash });
-    if (month === PROJECTION_MONTHS) break;
+  for (let month = 0; month <= projectionMonths; month += 1) {
+    points.push({ month, loan, stock, cash, cumulativeInterest });
+    if (month === projectionMonths) break;
 
     let actualPayment = 0;
     let interest = 0;
@@ -88,7 +90,7 @@ export function projectScenario(rawInputs) {
         : Math.min(loan, Math.max(0, scheduledPrincipal));
       actualPayment = principalPayment + interest;
       loan = Math.max(0, loan - principalPayment);
-      totalInterest += interest;
+      cumulativeInterest += interest;
       if (month === 0) {
         firstPayment = actualPayment;
         firstInterest = interest;
@@ -114,11 +116,16 @@ export function projectScenario(rawInputs) {
 
   const crossover = points.find((point) => point.stock >= point.loan);
   const finalPoint = points.at(-1);
+  const thirtyYearPoint = points[PROJECTION_MONTHS];
+  const totalInterest = inputs.repaymentMethod === 'equal-payment'
+    ? equalPayment * loanMonths - inputs.loanPrincipal
+    : loanMonthlyRate * inputs.loanPrincipal * (loanMonths + 1) / 2;
   return {
     inputs,
     points,
     summary: {
       loanMonths,
+      projectionMonths,
       payoffMonth,
       firstPayment,
       firstInterest,
@@ -127,7 +134,7 @@ export function projectScenario(rawInputs) {
       crossoverMonth: crossover?.month ?? null,
       cashNegativeMonth,
       finalLoan: finalPoint.loan,
-      finalStock: finalPoint.stock,
+      finalStock: thirtyYearPoint.stock,
       finalCash: finalPoint.cash,
       investedCapital: inputs.stockPrincipal + inputs.monthlyInvestment * PROJECTION_MONTHS,
       preRetirementNet: inputs.monthlyIncome - inputs.monthlyExpenses - inputs.monthlyInvestment - firstPayment,
